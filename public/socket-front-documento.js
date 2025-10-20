@@ -6,8 +6,12 @@ function selecionarDocumento(nome) {
     socket.emit("selecionar_documento", nome)
 }
 
-function emitirTextoEditor(texto) {
-   socket.emit("texto_editor", texto)
+function salvaTexto(dados) {
+    socket.emit("salva_texto", dados)
+}
+
+function emitirTextoEditor(object) {
+   socket.emit("texto_editor", object)
 }
 
 socket.on("texto_editor_clientes", (texto)=> {
@@ -15,4 +19,5 @@ socket.on("texto_editor_clientes", (texto)=> {
 });
 
 
-export {emitirTextoEditor, selecionarDocumento};
+
+export {emitirTextoEditor, selecionarDocumento, salvaTexto};

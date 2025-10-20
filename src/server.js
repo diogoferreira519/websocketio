@@ -1,8 +1,9 @@
 import express from 'express';
 import url from "url";
 import path from "path";
-import http from "http";
+import http from "http";    
 import { Server } from 'socket.io';
+import './dbConnect.js';
 
 const app = express();
 
@@ -12,7 +13,7 @@ app.use(express.static(diretorio));
 
 const servidorHttp = http.createServer(app)
 
-servidorHttp.listen(4343, () => console.log('ACERRTOOO'));
+servidorHttp.listen(4343, () => console.log('porta 4343 rodando'));
 
 const io = new Server(servidorHttp);
 

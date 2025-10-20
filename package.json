@@ -12,7 +12,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "dotenv": "^17.2.3",
     "express": "^4.21.2",
+    "mongodb": "4.11",
     "nodemon": "^2.0.22",
     "socket.io": "^4.8.1"
   }
