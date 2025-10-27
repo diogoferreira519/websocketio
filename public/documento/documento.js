@@ -1,11 +1,12 @@
-import {emitirTextoEditor, selecionarDocumento, salvaTexto} from "./socket-front-documento.js"
+import {emitirTextoEditor, selecionarDocumento, salvaTexto, excluiDocumento} from "../socket-front-documento.js"
 
 const textArea = document.getElementById('editor-texto');
 
 const parametros = new URLSearchParams(window.location.search);
-const nomeDocumento = parametros.get("nome");
+const nomeDocumento = decodeURIComponent(parametros.get("nome")).trim();
 const tituloPagina = document.getElementById("titulo-documento")
 const buttonBack = document.getElementById('button-back');
+const buttonExcluir = document.getElementById('excluir-documento')
 
 tituloPagina.textContent = nomeDocumento || 'Documento sem titulo';
 
@@ -25,9 +26,22 @@ buttonBack.addEventListener('click', ()=> {
     salvaTexto({nomeDocumento, texto: textArea.value});
 })
 
+buttonExcluir.addEventListener('click', ()=> {
+    excluiDocumento(nomeDocumento);
+})
+
 function atualizaClientesTextoEditor(texto) {
     textArea.value = texto;
 }
 
-export {atualizaClientesTextoEditor};
+function atualizaExcluir(nomeDoc) {
+    console.log('caiuiu?')
+    if (nomeDoc == nomeDocumento) {
+        console.log('caiuiu?')
+        alert(`Este documento ${nomeDoc} foi excluido por alguém`);
+        window.location.href = "/"
+    }
+}
+
+export {atualizaClientesTextoEditor, atualizaExcluir};
 

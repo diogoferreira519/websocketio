@@ -12,12 +12,15 @@ io.on("connection", (socket)=> {
     socket.on("selecionar_documento", async (nome) => {
 
         socket.join(nome)
+        try {
+            const documento = await encontrarDocumento(nome);
 
-        const documento = await encontrarDocumento(nome);
-
-        if (documento) 
-        {
-            socket.emit("texto_editor_clientes", documento.texto);
+            if (documento) 
+            {
+                socket.emit("texto_editor_clientes", documento.texto);
+            }
+        } catch(error) {
+            console.log(error.message);
         }
     })
   
@@ -28,25 +31,61 @@ io.on("connection", (socket)=> {
     })
 
     socket.on("salva_texto", async (dados) => {
-        const atualizado = await documentosCollection.updateOne({nome: dados.nomeDocumento}, { $set: { texto: dados.texto}});
+        try {
+            await documentosCollection.updateOne({nome: dados.nomeDocumento}, { $set: { texto: dados.texto || " "}});
+            // if (atualizado.matchedCount === 0) {
+            //     await documentosCollection.insertOne({nome: dados.nomeDocumento, texto: dados.texto})
+            // } 
+        } catch(error) {
+            console.log(error.message);
+        }
+    })
 
-        if (atualizado.matchedCount === 0) {
-            await documentosCollection.insertOne({nome: dados.nomeDocumento, texto: dados.texto})
-        } 
+    socket.on("excluir_doc", async (nomeDoc) => {
+        try {
+            await documentosCollection.deleteOne({nome: nomeDoc});
+            io.emit("exclui_atualiza_pagina", nomeDoc);
+        } catch(error) {
+            console.log(error.message);
+        }
+    })
+
+    socket.on("insert_doc", async (nomeDoc) => {
+        try {
+            const existeDoc = await encontrarDocumento(nomeDoc);
+            if (existeDoc) {
+                io.emit("emite_alerta", `Nome do documento já existe ${nomeDoc}`);
+                return;
+            }
+
+            const inseriu = await documentosCollection.insertOne({nome: nomeDoc, texto: ""});
+            if (inseriu.insertedId) {
+                io.emit('atualizar_pagina', nomeDoc);
+            }
+        } catch(error) {
+            console.log(error.message);
+        }
     })
 
     socket.on("consulta_docs", async (devolverDocumentos)=> {
+        try {
+            const documentos = await documentosCollection.find().toArray();
         
-        const documentos = await documentosCollection.find().toArray();
-        
-        if (documentos) {
-            devolverDocumentos(documentos);
+            if (documentos) {
+                devolverDocumentos(documentos);
+            }
+        } catch(error) {
+            console.error(error.message);
         }
     })
 })
 
-function encontrarDocumento(nome) {
-    const documento = documentosCollection.findOne({nome});
+async function encontrarDocumento(nome) {
+    try {
+        const documento = await documentosCollection.findOne({nome});
 
-    return documento;
+        return documento;   
+    } catch(error) {
+        console.error(error.message);
+    }
 }
