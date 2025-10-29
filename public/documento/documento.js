@@ -1,4 +1,4 @@
-import {emitirTextoEditor, selecionarDocumento, salvaTexto, excluiDocumento} from "../socket-front-documento.js"
+import {emitirTextoEditor, selecionarDocumento, salvaTexto, excluiDocumento} from "./socket-front-documento.js"
 
 const textArea = document.getElementById('editor-texto');
 

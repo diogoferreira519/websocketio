@@ -1,4 +1,4 @@
-import { atualizaClientesTextoEditor, atualizaExcluir } from "./documento/documento.js";
+import { atualizaClientesTextoEditor, atualizaExcluir } from "./documento.js";
 
 const socket = io();
 
