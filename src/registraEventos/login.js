@@ -17,9 +17,8 @@ function registrarEventosLogin(socket, io, usuarios) {
         }
 
         const tokenJwt = gerarJwt(nome);
-        socket.emit('login_usuario_sucesso');
 
-
+        socket.emit('login_usuario_sucesso', tokenJwt);
     }) 
 }
 export default registrarEventosLogin;

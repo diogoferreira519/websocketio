@@ -1,4 +1,4 @@
-import {emitirTextoEditor, selecionarDocumento, salvaTexto, excluiDocumento} from "./socket-front-documento.js"
+import { emitirTextoEditor, selecionarDocumento, salvaTexto, excluiDocumento } from "./socket-front-documento.js"
 
 const textArea = document.getElementById('editor-texto');
 
@@ -7,41 +7,59 @@ const nomeDocumento = decodeURIComponent(parametros.get("nome")).trim();
 const tituloPagina = document.getElementById("titulo-documento")
 const buttonBack = document.getElementById('button-back');
 const buttonExcluir = document.getElementById('excluir-documento')
+const listaUsers = document.getElementById('lista-usuarios');
 
 tituloPagina.textContent = nomeDocumento || 'Documento sem titulo';
 
-if (nomeDocumento) {
-    selecionarDocumento(nomeDocumento);
+
+
+function tratarAutorizacaoUsuario(payloadToken) {
+    if (nomeDocumento) {
+        selecionarDocumento({ nomeDocumento, user: payloadToken.user });
+    }
 }
 
-textArea.addEventListener('keyup', (e)=> {
+textArea.addEventListener('keyup', (e) => {
     e.preventDefault();
     emitirTextoEditor({
-        texto: e.target.value, 
+        texto: e.target.value,
         nomeDocumento,
     });
 });
 
-buttonBack.addEventListener('click', ()=> {
-    salvaTexto({nomeDocumento, texto: textArea.value});
+buttonBack.addEventListener('click', () => {
+    salvaTexto({ nomeDocumento, texto: textArea.value });
 })
 
-buttonExcluir.addEventListener('click', ()=> {
+buttonExcluir.addEventListener('click', () => {
     excluiDocumento(nomeDocumento);
 })
 
-function atualizaClientesTextoEditor(texto) {
+
+
+function atualizaClientesTextoEditor({ texto, user }) {
     textArea.value = texto;
 }
 
 function atualizaExcluir(nomeDoc) {
-    console.log('caiuiu?')
     if (nomeDoc == nomeDocumento) {
-        console.log('caiuiu?')
         alert(`Este documento ${nomeDoc} foi excluido por alguém`);
         window.location.href = "/"
     }
 }
 
-export {atualizaClientesTextoEditor, atualizaExcluir};
+function atualizaListaUsers(users) {
+    if (users && users.length > 0) {
+        listaUsers.innerHTML = "";
+        users.forEach((user) => {
+            const li = document.createElement('li')
+            li.textContent = `${user} 🟢`;
+            li.className = 'list-group-item'
+            listaUsers.appendChild(li);
+        })
+    }
+
+}
+
+export { atualizaClientesTextoEditor, atualizaExcluir, tratarAutorizacaoUsuario, atualizaListaUsers };
 
